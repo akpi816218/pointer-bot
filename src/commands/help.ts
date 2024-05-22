@@ -4,20 +4,20 @@ import {
 	SlashCommandBuilder,
 	inlineCode
 } from 'discord.js';
-import { CommandHelpEntry } from '../struct/CommandHelpEntry';
+import { CommandHelpEntry } from '../lib/CommandHelpEntry';
 import { Jsoning } from 'jsoning';
 import { Collection } from '@discordjs/collection';
 
 const db = new Jsoning('botfiles/cmnds.db.json');
 
 export const help = new CommandHelpEntry(
-	'coghelp',
+	'help',
 	'Shows general help or help for a specific command',
 	'[command: string]'
 );
 
 export const data = new SlashCommandBuilder()
-	.setName('coghelp')
+	.setName('help')
 	.setDescription('Shows help')
 	.addStringOption(option => {
 		return option
@@ -33,7 +33,7 @@ export const data = new SlashCommandBuilder()
 
 export const execute = async (interaction: ChatInputCommandInteraction) => {
 	const embed = new EmbedBuilder()
-		.setTitle('DisCog Help')
+		.setTitle('Calculair Help')
 		.setDescription(
 			`\`[argument: type]\` represents an optional argument. \`<argument: type>\` represents a required argument.\n\`@self\` represents the user who ran the command.\n\`type || default\` means an option of type \`type\`with a default value of \`default\`.\n\`[argument: a < number < b]\` represents an optional argument of type \`number\` between \`a\` and \`b\` (exclusive). `
 		)
@@ -53,7 +53,7 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 	else
 		embed.setDescription(
 			`Command ${inlineCode(command)} not found. Use ${inlineCode(
-				'/coghelp'
+				'/help'
 			)} to see all commands.`
 		);
 

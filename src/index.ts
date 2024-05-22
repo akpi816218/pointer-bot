@@ -12,11 +12,11 @@ import {
 	codeBlock,
 	time
 } from 'discord.js';
-import { CommandClient } from './struct/Extend';
+import { CommandClient } from './lib/Extend';
 import { Methods, createServer } from './server';
 import { DENO_KV_URL, DatabaseKeys, PORT, permissionsBits } from './config';
 import { argv, cwd, stdout } from 'process';
-import { Event } from './struct/types';
+import { Event } from './lib/types';
 import { InteractionHandlers } from './interactionHandlers';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -24,7 +24,7 @@ import { logger } from './logger';
 import { readdirSync } from 'fs';
 import { openKv } from '@deno/kv';
 import { Jsoning } from 'jsoning';
-import { Command } from './struct/CommandHelpEntry';
+import { Command } from './lib/CommandHelpEntry';
 
 argv.shift();
 argv.shift();

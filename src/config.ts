@@ -16,9 +16,5 @@ export const permissionsBits = new PermissionsBitField().add(
 
 export const PORT = 8000;
 
-export const DENO_KV_URL = 'https://api.deno.com/databases//connect';
-
-export enum DatabaseKeys {
-	Devs = 'devs',
-	Challenges = 'challenges'
-}
+export const DENO_KV_URL =
+	'https://api.deno.com/databases/5e0e377b-ecc7-4195-94d2-cfd04b04316e/connect';

@@ -4,7 +4,7 @@ import { clientId } from '../src/config';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
 import Jsoning, { JSONValue } from 'jsoning';
-import { Command } from '../src/struct/types';
+import { Command } from '../src/lib/types';
 
 export const commandsPath = join(
 	dirname(fileURLToPath(import.meta.url)),

@@ -1,6 +1,14 @@
-import { ApplicationCommandType, ContextMenuCommandBuilder } from 'discord.js';
+import {
+	ApplicationCommandType,
+	ContextMenuCommandBuilder,
+	UserContextMenuCommandInteraction
+} from 'discord.js';
 
 export const data = new ContextMenuCommandBuilder()
-	.setName('User Info')
+	.setName('User Stats')
 	.setType(ApplicationCommandType.User)
-	.setDMPermission(true);
+	.setDMPermission(false);
+
+export async function execute(interaction: UserContextMenuCommandInteraction) {
+	await interaction.deferReply();
+}
