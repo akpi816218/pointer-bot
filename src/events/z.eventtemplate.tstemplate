@@ -1,0 +1,9 @@
+import { Events } from 'discord.js';
+
+// ! Add event property
+export const name = Events;
+export const once = false;
+export const execute =
+	async (/* Add args passed to event handler function */) => {
+		// ...
+	};

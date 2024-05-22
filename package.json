@@ -1,0 +1,41 @@
+{
+	"author": "Akhil Pillai",
+	"dependencies": {
+		"@deno/kv": "^0.7.0",
+		"@discordjs/collection": "^2.1.0",
+		"@napi-rs/canvas": "^0.1.52",
+		"discord.js": "^14.15.2",
+		"dotenv": "^16.4.5",
+		"express": "^4.19.2",
+		"helmet": "^7.1.0",
+		"jsoning": "^1.0.1",
+		"pino": "^9.1.0",
+		"pino-pretty": "^11.0.0"
+	},
+	"description": "",
+	"devDependencies": {
+		"@types/express": "^4.17.21",
+		"@types/node-schedule": "^2.1.7",
+		"@typescript-eslint/eslint-plugin": "^7.10.0",
+		"@typescript-eslint/parser": "^7.10.0",
+		"npm-check-updates": "^16.14.20",
+		"prettier": "^3.2.5",
+		"tsx": "^4.10.5",
+		"typescript": "^5.4.5"
+	},
+	"main": "src/index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build-commands": "tsx scripts/buildCommands.ts",
+		"build-image": "docker build -t akpi816218/calculair . && docker push akpi816218/calculair",
+		"check": "tsc",
+		"deploy": "npm ci && npm start",
+		"deploy-full": "npm ci && npm urn build-commands && npm start",
+		"fmt": "prettier -w .",
+		"lint": "eslint .",
+		"precommit": "npm urn build",
+		"start": "tsx src/index.ts",
+		"up": "ncu -u && npm i"
+	}
+}
