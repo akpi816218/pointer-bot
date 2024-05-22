@@ -15,7 +15,8 @@ COPY ./scripts ./scripts
 # Install node packages, install serve, build the app, and remove dependencies at the end
 RUN npm ci
 
-EXPOSE 8000
+# Expose the port, not necessary for only Discord-integrated bots
+#EXPOSE 8000
 
 # Start the app using serve command
 CMD [ "npm", "start" ]
