@@ -17,7 +17,6 @@ import { Methods, createServer } from './server';
 import { DENO_KV_URL, PORT, permissionsBits } from './config';
 import { argv, cwd, stdout } from 'process';
 import { Event } from './lib/types';
-import { InteractionHandlers } from './interactionHandlers';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from './logger';
@@ -39,10 +38,8 @@ logger.debug('Loaded dev database.');
 
 const client = new CommandClient({
 	intents: [
-		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.GuildMessageReactions,
-		GatewayIntentBits.GuildWebhooks
+		GatewayIntentBits.GuildMessageReactions
 	],
 	presence: {
 		activities: [
@@ -131,38 +128,6 @@ client
 						content: 'There was an error while running this command.',
 						ephemeral: true
 					});
-				}
-			}
-		} else if (interaction.isModalSubmit()) {
-			try {
-				await InteractionHandlers.ModalSubmit(interaction);
-			} catch (e) {
-				try {
-					if (interaction.replied)
-						await interaction.editReply({
-							content: 'There was an error while running this command.'
-						});
-					else
-						await interaction.reply({
-							content: 'There was an error while running this command.',
-							ephemeral: true
-						});
-				} catch (e) {
-					logger.error(e);
-				}
-				logger.error(e);
-			}
-		} else if (interaction.isUserContextMenuCommand()) {
-			try {
-				await InteractionHandlers.ContextMenu.User(interaction);
-			} catch {
-				try {
-					await interaction.reply({
-						content: 'There was an error while running this command.',
-						ephemeral: true
-					});
-				} catch (e) {
-					logger.error(e);
 				}
 			}
 		}

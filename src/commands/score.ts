@@ -1,6 +1,7 @@
 import {
 	ChatInputCommandInteraction,
 	EmbedBuilder,
+	PermissionFlagsBits,
 	SlashCommandBuilder,
 	userMention
 } from 'discord.js';
@@ -18,6 +19,7 @@ export const data = new SlashCommandBuilder()
 	.setName('score')
 	.setDescription('Manage scores for users')
 	.setDMPermission(false)
+	.setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 	.addSubcommand(cmd =>
 		cmd
 			.setName('view')
@@ -70,7 +72,9 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 				user
 					? (userScore && `${userMention(user.id)} - ${userScore}pts`) ||
 							`No score for ${userMention(user.id)}`
-					: scores.map(v => `${userMention(v.id)} - ${v.score}`).join('\n')
+					: scores.length > 0
+						? scores.map(v => `${userMention(v.id)} - ${v.score}`).join('\n')
+						: 'No scores'
 			)
 			.setTimestamp()
 			.setFooter({

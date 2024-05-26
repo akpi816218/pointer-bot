@@ -46,37 +46,40 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 		})
 		.setColor(0xffff00);
 
-	const files = [];
-
 	if (interaction.options.getBoolean('image', false)) {
 		embed.setImage('attachment://leaderboard.png');
 
-		files.push(
-			new AttachmentBuilder(
-				await generateLeaderboardImage(
-					scores.map(v => v.value),
-					interaction
-				),
-				{
-					name: 'leaderboard.png',
-					description: 'Leaderboard image'
-				}
-			)
-		);
-	} else
-		embed.setDescription(
-			scores
-				.map(
-					(entry, i) =>
-						`${i + 1}. ${userMention(entry.value.id)} - ${entry.value.score}pts`
+		await interaction.editReply({
+			embeds: [embed],
+			files: [
+				new AttachmentBuilder(
+					await generateLeaderboardImage(
+						scores.map(v => v.value),
+						interaction
+					),
+					{
+						name: 'leaderboard.png',
+						description: 'Leaderboard image'
+					}
 				)
-				.join('\n')
+			]
+		});
+	} else {
+		embed.setDescription(
+			scores.length > 0
+				? scores
+						.map(
+							(entry, i) =>
+								`${i + 1}. ${userMention(entry.value.id)} - ${entry.value.score}pts`
+						)
+						.join('\n')
+				: 'No scores to display'
 		);
 
-	await interaction.editReply({
-		embeds: [embed],
-		files
-	});
+		await interaction.editReply({
+			embeds: [embed]
+		});
+	}
 };
 
 async function generateLeaderboardImage(
