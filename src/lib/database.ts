@@ -1,9 +1,8 @@
 import { openKv } from '@deno/kv';
-import { DENO_KV_URL } from '../config';
 import { arrayFromAsync } from './util';
 
 export async function DenoKV() {
-	return await openKv(DENO_KV_URL);
+	return await openKv(process.env.DENO_KV_URL!);
 }
 
 export enum DatabaseKeys {

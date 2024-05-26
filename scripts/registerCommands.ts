@@ -1,10 +1,9 @@
 import { REST, Routes } from 'discord.js';
 import { dirname, join } from 'path';
-import { clientId } from '../src/config';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
 import Jsoning, { JSONValue } from 'jsoning';
-import { Command } from '../src/lib/types';
+import { Command } from '../src/lib/CommandHelpEntry';
 
 export const commandsPath = join(
 	dirname(fileURLToPath(import.meta.url)),
@@ -42,13 +41,15 @@ export async function registerCommands(
 		);
 	let data: unknown;
 	const rest = new REST().setToken(token);
-	await rest.put(Routes.applicationCommands(clientId), {
+	await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!), {
 		body: commands
 	});
 	return {
 		data,
 		getCommands: async () =>
-			await rest.get(Routes.applicationCommands(clientId)),
+			await rest.get(
+				Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!)
+			),
 		rest
 	};
 }
