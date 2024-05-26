@@ -1,14 +1,12 @@
 import { PermissionFlagsBits, PermissionsBitField } from 'discord.js';
 
-export const clientId = '1150536178714554459';
+export const clientId = '1244303044791894017';
 
 export const permissionsBits = new PermissionsBitField().add(
 	PermissionFlagsBits.AddReactions,
 	PermissionFlagsBits.AttachFiles,
 	PermissionFlagsBits.EmbedLinks,
-	PermissionFlagsBits.ManageMessages,
 	PermissionFlagsBits.MentionEveryone,
-	PermissionFlagsBits.ReadMessageHistory,
 	PermissionFlagsBits.SendMessages,
 	PermissionFlagsBits.SendMessagesInThreads,
 	PermissionFlagsBits.ViewChannel

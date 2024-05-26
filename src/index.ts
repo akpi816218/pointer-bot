@@ -14,7 +14,7 @@ import {
 } from 'discord.js';
 import { CommandClient } from './lib/Extend';
 import { Methods, createServer } from './server';
-import { DENO_KV_URL, DatabaseKeys, PORT, permissionsBits } from './config';
+import { DENO_KV_URL, PORT, permissionsBits } from './config';
 import { argv, cwd, stdout } from 'process';
 import { Event } from './lib/types';
 import { InteractionHandlers } from './interactionHandlers';
@@ -23,8 +23,9 @@ import { fileURLToPath } from 'url';
 import { logger } from './logger';
 import { readdirSync } from 'fs';
 import { openKv } from '@deno/kv';
-import { Jsoning } from 'jsoning';
+import { JSONValue, Jsoning } from 'jsoning';
 import { Command } from './lib/CommandHelpEntry';
+import { DatabaseKeys } from './lib/database';
 
 argv.shift();
 argv.shift();
@@ -38,16 +39,10 @@ logger.debug('Loaded dev database.');
 
 const client = new CommandClient({
 	intents: [
-		GatewayIntentBits.DirectMessages,
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildInvites,
 		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.GuildMessageReactions,
-		GatewayIntentBits.GuildModeration,
-		GatewayIntentBits.GuildScheduledEvents,
-		GatewayIntentBits.GuildWebhooks,
-		GatewayIntentBits.MessageContent
+		GatewayIntentBits.GuildWebhooks
 	],
 	presence: {
 		activities: [
@@ -75,64 +70,9 @@ const server = createServer(
 		route: '/invite'
 	},
 	{
-		handler: (_req, res) => res.redirect('/status'),
-		method: Methods.GET,
-		route: '/'
-	},
-	{
 		handler: (_req, res) => res.sendStatus(client.isReady() ? 200 : 503),
 		method: Methods.GET,
-		route: '/status'
-	},
-	{
-		handler: (req, res) => {
-			if (
-				req.headers['content-type'] !== 'application/json' &&
-				req.headers['content-type'] != undefined
-			)
-				res.status(415).end();
-			else if (client.isReady())
-				res
-					.status(200)
-					.contentType('application/json')
-					.send({
-						clientPing: client.ws.ping,
-						clientReady: client.isReady(),
-						commandCount: client.application!.commands.cache.size,
-						guildCount: client.application!.approximateGuildCount,
-						lastReady: client.readyAt!.valueOf(),
-						timestamp: Date.now(),
-						uptime: client.uptime
-					})
-					.end();
-			else res.status(503).end();
-		},
-		method: Methods.GET,
-		route: '/bot'
-	},
-	{
-		handler: (req, res) => {
-			if (
-				req.headers['content-type'] !== 'application/json' &&
-				req.headers['content-type'] != undefined
-			)
-				res.status(415).end();
-			else if (client.isReady())
-				res
-					.status(200)
-					.contentType('application/json')
-					.send({
-						commands: client.commands.map(command => ({
-							data: command.data.toJSON(),
-							help: command.help?.toJSON()
-						})),
-						timestamp: Date.now()
-					})
-					.end();
-			else res.status(503).end();
-		},
-		method: Methods.GET,
-		route: '/commands'
+		route: '/'
 	}
 );
 logger.debug('Created server instance.');
@@ -151,8 +91,7 @@ for (const file of commandFiles) {
 	if (command.help)
 		await cmndb.set(
 			command.data.name,
-			// @ts-expect-error types
-			command.help.toJSON()
+			command.help!.toJSON() as unknown as JSONValue
 		);
 }
 client.commands.freeze();

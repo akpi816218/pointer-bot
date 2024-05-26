@@ -1,4 +1,5 @@
 import {
+	AttachmentBuilder,
 	ChatInputCommandInteraction,
 	EmbedBuilder,
 	SlashCommandBuilder,
@@ -6,43 +7,124 @@ import {
 } from 'discord.js';
 import { CommandHelpEntry } from '../lib/CommandHelpEntry';
 import { getPeopleSortedByScores } from '../lib/database';
+import { Canvas, GlobalFonts, Image } from '@napi-rs/canvas';
+import { readFile } from 'fs/promises';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { truncString } from '../lib/util';
 
 export const help = new CommandHelpEntry(
-	'help',
-	'Shows general help or help for a specific command',
-	'[command: string]'
+	'leaderboard',
+	'Shows the current leaderboard',
+	'[image: boolean]'
 );
 
 export const data = new SlashCommandBuilder()
-	.setName('help')
-	.setDescription('Shows help')
-	.setDMPermission(false);
+	.setName('leaderboard')
+	.setDescription('Shows the current leaderboard')
+	.setDMPermission(false)
+	.addBooleanOption(option =>
+		option
+			.setName('image')
+			.setDescription(
+				'Whether to show the leaderboard as a dynamically generated image'
+			)
+			.setRequired(false)
+	);
 
 export const execute = async (interaction: ChatInputCommandInteraction) => {
 	await interaction.deferReply();
 
 	const scores = await getPeopleSortedByScores();
 
-	await interaction.editReply({
-		embeds: [
-			new EmbedBuilder()
-				.setTitle('Leaderboard')
-				.setDescription(
-					scores
-						.map(
-							(entry, i) =>
-								`${i + 1}. ${userMention(entry.value.id)} - ${entry.value.score}pts`
-						)
-						.join('\n')
+	const embed = new EmbedBuilder()
+		.setTitle('Leaderboard')
+		.setTimestamp()
+		.setFooter({
+			iconURL: interaction.client.user.displayAvatarURL(),
+			text: `Requested by ${interaction.user.username}`
+		})
+		.setColor(0xffff00);
+
+	const files = [];
+
+	if (interaction.options.getBoolean('image', false)) {
+		embed.setImage('attachment://leaderboard.png');
+
+		files.push(
+			new AttachmentBuilder(
+				await generateLeaderboardImage(
+					scores.map(v => v.value),
+					interaction
+				),
+				{
+					name: 'leaderboard.png',
+					description: 'Leaderboard image'
+				}
+			)
+		);
+	} else
+		embed.setDescription(
+			scores
+				.map(
+					(entry, i) =>
+						`${i + 1}. ${userMention(entry.value.id)} - ${entry.value.score}pts`
 				)
-				.setTimestamp()
-				.setFooter({
-					iconURL: interaction.client.user.displayAvatarURL(),
-					text: `Requested by ${interaction.user.username}`
-				})
-				.setColor(0xffff00)
-		]
-		// @napi-rs/canvas leaderboard image
-		// attachments: []
+				.join('\n')
+		);
+
+	await interaction.editReply({
+		embeds: [embed],
+		files
 	});
 };
+
+async function generateLeaderboardImage(
+	scores: { id: string; score: number }[],
+	interaction: ChatInputCommandInteraction
+) {
+	const canvas = new Canvas(1280, 800);
+	const ctx = canvas.getContext('2d');
+
+	const bg = new Image(1280, 800);
+	bg.src = await readFile(
+		join(
+			dirname(fileURLToPath(import.meta.url)),
+			'..',
+			'..',
+			'assets',
+			'leaderboard_bg.svg'
+		)
+	);
+	ctx.drawImage(bg, 0, 0);
+
+	GlobalFonts.registerFromPath(
+		join(
+			dirname(fileURLToPath(import.meta.url)),
+			'..',
+			'..',
+			'assets',
+			'static',
+			'OpenSans-Bold.ttf'
+		)
+	);
+	ctx.fillStyle = 'white';
+	ctx.lineWidth = 10;
+	ctx.font = 'bold 80px Open Sans';
+	ctx.fillText('Leaderboard', 100, 100);
+
+	await Promise.all([
+		scores.slice(0, 5).map(
+			(data, i) =>
+				new Promise(() =>
+					interaction.guild!.members.fetch(data.id).then(user => {
+						ctx.fillText(`${i + 1}.`, 100, 200 + i * 100);
+						ctx.fillText(truncString(user.displayName, 10), 200, 200 + i * 100);
+						ctx.fillText(`${data.score}pts`, 1000, 200 + i * 100);
+					})
+				)
+		)
+	]);
+
+	return await canvas.encode('png');
+}
