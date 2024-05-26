@@ -4,7 +4,7 @@ A self-hostable Discord bot implementing a very simple per-guild point system.
 
 ## Building
 
-Don't. Use the prebuilt Docker image.
+Don't. Just use the prebuilt Docker image.
 
 ## Deploying
 

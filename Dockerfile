@@ -10,7 +10,8 @@ COPY package*.json ./
 # Copy local directories to the current local directory of our image
 COPY ./src ./src
 COPY ./botfiles ./botfiles
-COPY ./scripts ./scripts
+COPY ./assets ./assets
+#COPY ./scripts ./scripts
 
 # Install node packages
 RUN npm ci
