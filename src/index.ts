@@ -14,17 +14,16 @@ import {
 } from 'discord.js';
 import { CommandClient } from './lib/Extend';
 import { Methods, createServer } from './server';
-import { DENO_KV_URL, PORT, permissionsBits } from './config';
+import { PORT, permissionsBits } from './config';
 import { argv, cwd, stdout } from 'process';
 import { Event } from './lib/types';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from './logger';
 import { readdirSync } from 'fs';
-import { openKv } from '@deno/kv';
 import { JSONValue, Jsoning } from 'jsoning';
 import { Command } from './lib/CommandHelpEntry';
-import { DatabaseKeys } from './lib/database';
+import { DatabaseKeys, DenoKV } from './lib/database';
 
 argv.shift();
 argv.shift();
@@ -33,7 +32,7 @@ if (argv.includes('-d')) {
 	logger.debug('Debug mode enabled.');
 }
 
-const db = await openKv(DENO_KV_URL);
+const db = await DenoKV();
 logger.debug('Loaded dev database.');
 
 const client = new CommandClient({

@@ -14,12 +14,12 @@ Get a Discord bot token and client ID, and a Deno KV connection endpoint URL and
 
 ```sh
 $ docker pull akpi816218/pointer-bot:latest
-$ docker run -d
-		-e DISCORD_TOKEN=your_discord_token
-		-e DISCORD_CLIENT_ID=your_discord_client_id
-		-e DENO_KV_URL=your_kv_endpoint
-		-e DENO_KV_ACCESS_TOKEN=your_kv_token
-		akpi816218/pointer-bot:latest
+$ docker run -d \
+	-e DISCORD_TOKEN=your_discord_token \
+	-e DISCORD_CLIENT_ID=your_discord_client_id \
+	-e DENO_KV_URL=your_kv_endpoint \
+	-e DENO_KV_ACCESS_TOKEN=your_kv_token \
+	akpi816218/pointer-bot:latest
 ```
 
 ## Contributions
