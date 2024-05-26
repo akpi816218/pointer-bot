@@ -145,6 +145,9 @@ process.on('SIGINT', () => {
 	client.destroy();
 	stdout.write('\n');
 	logger.info('Destroyed Client.');
+	cmndb.clear();
+	logger.info('Cleared command database.');
+	logger.info('Cleanup complete, exiting.');
 	process.exit(0);
 });
 
