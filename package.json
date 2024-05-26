@@ -10,7 +10,7 @@
 		"helmet": "^7.1.0",
 		"jsoning": "^1.0.1",
 		"pino": "^9.1.0",
-		"pino-pretty": "^11.0.0"
+		"pino-pretty": "^11.1.0"
 	},
 	"description": "",
 	"devDependencies": {
@@ -21,7 +21,7 @@
 		"@typescript-eslint/parser": "^7.10.0",
 		"npm-check-updates": "^16.14.20",
 		"prettier": "^3.2.5",
-		"tsx": "^4.10.5",
+		"tsx": "^4.11.0",
 		"typescript": "^5.4.5"
 	},
 	"main": "src/index.ts",
