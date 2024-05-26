@@ -12,18 +12,20 @@ export enum DatabaseKeys {
 	People = 'people'
 }
 
-export async function getPeople() {
+export async function getPeople(guildId: string) {
 	return await arrayFromAsync(
-		(await DenoKV()).list<PersonData>({ prefix: [DatabaseKeys.People] })
+		(await DenoKV()).list<PersonData>({
+			prefix: [guildId, DatabaseKeys.People]
+		})
 	);
 }
 
-export async function getPerson(id: string) {
-	return (await DenoKV()).get<PersonData>([DatabaseKeys.People, id]);
+export async function getPerson(guildId: string, id: string) {
+	return (await DenoKV()).get<PersonData>([guildId, DatabaseKeys.People, id]);
 }
 
-export async function setPerson(id: string, data: PersonData) {
-	return (await DenoKV()).set([DatabaseKeys.People, id], data);
+export async function setPerson(guildId: string, id: string, data: PersonData) {
+	return (await DenoKV()).set([guildId, DatabaseKeys.People, id], data);
 }
 
 // export async function getChallenges() {
@@ -42,17 +44,22 @@ export async function setPerson(id: string, data: PersonData) {
 // 	return (await DenoKV()).set([DatabaseKeys.Challenges, id], data);
 // }
 
-export async function getPeopleSortedByScores() {
-	return (await getPeople()).sort((a, b) => b.value.score - a.value.score);
+export async function getPeopleSortedByScores(guildId: string) {
+	return (await getPeople(guildId)).sort(
+		(a, b) => b.value.score - a.value.score
+	);
 }
 
-export async function bumpScore(id: string, points: number) {
-	const person = (await getPerson(id)).value ?? {
-		id,
-		score: 0
-	};
+export async function bumpScore(guildId: string, id: string, points: number) {
+	const person =
+		(await getPerson(guildId, id)).value ??
+		({
+			id,
+			score: 0,
+			guildId
+		} satisfies PersonData);
 	const score = person.score + points;
-	await setPerson(id, { ...person, score });
+	await setPerson(guildId, id, { ...person, score });
 	return score;
 }
 
@@ -84,6 +91,10 @@ export async function bumpScore(id: string, points: number) {
 // }
 
 export interface PersonData {
+	/**
+	 * @prop {string} guildId The ID of the person's guild
+	 */
+	guildId: string;
 	/**
 	 * @prop {string} id The ID of the person
 	 */

@@ -52,6 +52,8 @@ export const data = new SlashCommandBuilder()
 	);
 
 export const execute = async (interaction: ChatInputCommandInteraction) => {
+	if (!interaction.inGuild()) return;
+
 	await interaction.deferReply();
 
 	const subcommand = interaction.options.getSubcommand(true);
@@ -59,7 +61,9 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 
 	if (subcommand === 'view') {
 		const user = interaction.options.getUser('user', false);
-		const scores = (await getPeopleSortedByScores()).map(v => v.value);
+		const scores = (await getPeopleSortedByScores(interaction.guildId)).map(
+			v => v.value
+		);
 		const userScore = user
 			? scores.find(v => v.id === user.id)?.score
 			: undefined;
@@ -90,6 +94,7 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 			.setTitle(`Score | @${user.displayName ?? user.username}`)
 			.setDescription(
 				`Added ${points}pts to ${userMention(user.id)}\nNew score: ${await bumpScore(
+					interaction.guildId,
 					user.id,
 					points
 				)}pts`

@@ -33,9 +33,11 @@ export const data = new SlashCommandBuilder()
 	);
 
 export const execute = async (interaction: ChatInputCommandInteraction) => {
+	if (!interaction.inGuild()) return;
+
 	await interaction.deferReply();
 
-	const scores = await getPeopleSortedByScores();
+	const scores = await getPeopleSortedByScores(interaction.guildId);
 
 	const embed = new EmbedBuilder()
 		.setTitle('Leaderboard')
