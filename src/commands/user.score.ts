@@ -6,7 +6,7 @@ import {
 import { getPerson } from '../lib/database';
 
 export const data = new ContextMenuCommandBuilder()
-	.setName('User Stats')
+	.setName('Score')
 	.setType(ApplicationCommandType.User)
 	.setDMPermission(false);
 
@@ -21,10 +21,11 @@ export async function execute(interaction: UserContextMenuCommandInteraction) {
 
 	if (!person)
 		await interaction.editReply({
-			content: 'No stats found for this user.'
+			content: 'No score found for this user.'
 		});
 	else
 		await interaction.editReply({
-			content: `Stats for ${user.username}:\nScore: ${person.score}`
+			content: `Score for ${user}: ${person.score}`,
+			allowedMentions: {}
 		});
 }

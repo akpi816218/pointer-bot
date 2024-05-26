@@ -72,7 +72,7 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 				? scores
 						.map(
 							(entry, i) =>
-								`${i + 1}. ${userMention(entry.value.id)} - ${entry.value.score}pts`
+								`${i + 1}. ${userMention(entry.value.id)}: ${entry.value.score}pts`
 						)
 						.join('\n')
 				: 'No scores to display'
@@ -111,25 +111,21 @@ async function generateLeaderboardImage(
 			'assets',
 			'static',
 			'OpenSans-Bold.ttf'
-		)
+		),
+		'Open Sans'
 	);
 	ctx.fillStyle = 'white';
 	ctx.lineWidth = 10;
-	ctx.font = 'bold 80px Open Sans';
+	ctx.font = 'bold 80px "Open Sans"';
 	ctx.fillText('Leaderboard', 100, 100);
+	ctx.font = 'bold 50px "Open Sans"';
 
-	await Promise.all([
-		scores.slice(0, 5).map(
-			(data, i) =>
-				new Promise(() =>
-					interaction.guild!.members.fetch(data.id).then(user => {
-						ctx.fillText(`${i + 1}.`, 100, 200 + i * 100);
-						ctx.fillText(truncString(user.displayName, 10), 200, 200 + i * 100);
-						ctx.fillText(`${data.score}pts`, 1000, 200 + i * 100);
-					})
-				)
-		)
-	]);
+	for (const [i, data] of scores.slice(0, 5).entries()) {
+		const user = await interaction.guild!.members.fetch(data.id);
+		ctx.fillText(`${i + 1}.`, 100, 200 + i * 100);
+		ctx.fillText(truncString(user.displayName, 10), 200, 200 + i * 100);
+		ctx.fillText(`${data.score}pts`, 1000, 200 + i * 100);
+	}
 
 	return await canvas.encode('png');
 }

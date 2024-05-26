@@ -74,10 +74,10 @@ export const execute = async (interaction: ChatInputCommandInteraction) => {
 			)
 			.setDescription(
 				user
-					? (userScore && `${userMention(user.id)} - ${userScore}pts`) ||
+					? (userScore && `${userMention(user.id)}: ${userScore}pts`) ||
 							`No score for ${userMention(user.id)}`
 					: scores.length > 0
-						? scores.map(v => `${userMention(v.id)} - ${v.score}`).join('\n')
+						? scores.map(v => `${userMention(v.id)}: ${v.score}`).join('\n')
 						: 'No scores'
 			)
 			.setTimestamp()
